@@ -1,0 +1,6 @@
+
+
+#deduct
+
+#show current balance
+
