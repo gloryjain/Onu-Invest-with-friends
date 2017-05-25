@@ -4,6 +4,8 @@ import quandl
 import matplotlib
 import matplotlib.pyplot as plt
 import tempfile
+import os
+import requests
 
 locale.setlocale(locale.LC_ALL, ('en_US', 'UTF-8')) # Set locale to en_US
 quandl.ApiConfig.api_key = "V5uEXA4L1zfc9Q6Dp9Lz" # Set API key
@@ -22,16 +24,18 @@ def get_stock_price(ticker):
         data = get_stock_info(ticker, dataset='WIKI', suffix='', start_date=yesterday)
     return data.tail(1)['Close'].tolist()[0]
 
-def plot_stock_earnings(ticker):
+def get_stock_earnings_plot(ticker):
     # Core US Fundamentals Data
     # Earnings per Basic Share (Most Recent - Quarterly)
     data = get_stock_info(ticker, dataset='SF1', suffix='_EPS_MRQ')
-    plot = data.plot()
-    plt.savefig('sdf')
-    print "TODO Plots not implemented"
-    f = tempfile.NamedTemporaryFile()
-    print f
-    return data
+
+    plot = plt.plot(data)
+
+    # Save to a temporary file and upload to GroupMe
+    f = tempfile.NamedTemporaryFile(suffix='.png', delete=False) # open temporary file
+    plt.savefig(f.name)
+    upload_image(f.name, "Quarterly earnings for " + ticker.upper())
+    return f.name # image picture filepath
 
 # Returns stock price in a user-friendly way
 # https://stackoverflow.com/questions/320929/currency-formatting-in-python
@@ -41,14 +45,41 @@ def get_stock_price_friendly(ticker):
         price_pretty = locale.currency(price)
         return "Yesterday's end-of-day price for %s is %s." % (ticker.upper(), price_pretty)
     except quandl.errors.quandl_error.NotFoundError as e:
-        # print e # debug
+        # print(e) # debug
         return "Sorry, %s is not a valid ticker symbol name." % ticker
 
-# if __name__ == "__main__":
-# execute only if run as a script
-# print get_stock_price_friendly('AAPL')
-# print get_stock_price_friendly('GOOG')
-# print get_stock_price_friendly('FB')
-# print get_stock_price_friendly('COF')
-# print get_stock_price_friendly('QWERTY')
-plot_stock_earnings('AAPL')
+def upload_image(file_path, text=''):
+    # Upload image
+    headers = { 'Content-Type': 'image/jpeg',
+                'X-Access-Token': 'd98e567023a601356f8c53d177af4f91' # GM_TOKEN
+                }
+    
+    url = ''
+    with open(file_path, 'rb') as f:
+        response = requests.post('https://image.groupme.com/pictures', headers=headers, data=f)
+        url = response.json()['payload']['picture_url']
+    
+    # Post message
+    msg = {
+            "bot_id": "638f64d07ce7f83bdee814c31d",
+            "text": text,
+            "attachments": [
+                {
+                    "type": "image",
+                    "url": url
+                    }
+                ]
+            }
+    
+    print requests.post('https://api.groupme.com/v3/bots/post', json=msg)
+
+def test():
+    # print(get_stock_price_friendly('AAPL'))
+    # print(get_stock_price_friendly('GOOG'))
+    # print(get_stock_price_friendly('FB'))
+    # print(get_stock_price_friendly('COF'))
+    # print(get_stock_price_friendly('QWERTY')) # invalid
+    print(get_stock_earnings_plot('AAPL'))
+
+if __name__ == "__main__":
+    test()
