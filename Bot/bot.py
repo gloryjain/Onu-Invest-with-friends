@@ -11,17 +11,42 @@ import random
 import quandl
 import locale
 from datetime import *
+from uuid import uuid1
+
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.interval import IntervalTrigger
+from apscheduler.executors.pool import ThreadPoolExecutor
+
+executors = {
+    'default': ThreadPoolExecutor(30)
+}
+sc = BackgroundScheduler(executors=executors)
+sc.start()
+
+
 
 app = Flask(__name__)
-
 conf = json.loads(open("config.json").read())
-
-# ACCESS_TOKEN = "EAADL1pcTtMEBABqPCHEtOZB9f5fP05zZCJN6tJbT5ZCKypPFWgyydXtZBH5w4i3qSBerohZCNDZCa6RKIZBG4Rg0379LLG9kqe3qpsZBZB9gbQZBVFlfvWaiM3v7mpKbzHjk9ZCT2q3jjGe4c8S2PMIxCixDxBDcvepXyQzRwDJZCcOpSQZDZD"
-# VERIFY_TOKEN = "test_token"
-# bot = Bot(ACCESS_TOKEN)
 
 locale.setlocale(locale.LC_ALL, ('en_US', 'UTF-8')) # Set locale to en_US
 quandl.ApiConfig.api_key = "V5uEXA4L1zfc9Q6Dp9Lz" # Set API key
+
+
+
+def checkLikeAmount(msg_id, like_target, ticker, price, div_price, job_id):
+    data = {"token": conf['GM_TOKEN'], "limit": "20", "after_id":msg_id}
+    msgs = requests.get("https://api.groupme.com/v3/groups/" + conf['GM_GROUP'] + "/messages", params=data).json()
+
+    print(msgs['response']['messages'][0])
+    if(len(msgs['response']['messages'][0]['favorited_by']) >= like_target):
+        sendMessage("Confirmed 😊 Investing in "+ticker+"!")
+        sc.remove_job(job_id)
+        #todo: do shit
+
+
+
+
+
 
 # Returns price info in a pandas DataFrame
 def get_stock_info(ticker, dataset, suffix, start_date='', end_date=''):
@@ -80,6 +105,17 @@ def getNLP(query):
     return requests.get(url, headers=headers, params=data).json()
 
 
+def getMostRecentMSG():
+    data = {"token":conf['GM_TOKEN'], "limit":"20"}
+    msgs =  requests.get("https://api.groupme.com/v3/groups/"+conf['GM_GROUP']+"/messages", params=data).json()
+    print("msgs", msgs['response']['messages'])
+    for i in range(len(msgs['response']['messages'])):
+        m = msgs['response']['messages'][i]
+        if(m['sender_type'] == 'bot'):
+            return msgs['response']['messages'][i+1]["id"]
+
+
+
 @app.route("/msg", methods=["GET", "POST"])
 def groupme_message():
     print("hiya")
@@ -117,9 +153,9 @@ def groupme_message():
                   % (ticker.upper(), locale.currency(price), group_size,locale.currency(div_price))
             sendMessage(msg)
             sendMessage("Favorite THIS message to confirm!") #todo: me send?
-
-
-
+            prev_msg_id = getMostRecentMSG()
+            job_id = str(uuid1())
+            sc.add_job(checkLikeAmount, 'interval', args=[prev_msg_id, group_size, ticker, price, div_price, job_id], seconds=10, id=job_id)
     else:
         pass
 
@@ -132,39 +168,5 @@ def groupme_message():
 
 
 
-"""@app.route("/", methods=['GET', 'POST'])
-def hello():
-    if request.method == 'GET':
-        if request.args.get("hub.verify_token") == VERIFY_TOKEN:
-            return request.args.get("hub.challenge")
-        else:
-            return 'Invalid verification token'
-
-    if request.method == 'POST':
-        output = request.get_json()
-        for event in output['entry']:
-            messaging = event['messaging']
-            for x in messaging:
-                if x.get('message'): #todo: make sure msg says onu
-
-                    print(x)
-                    j = getNLP(x)
-
-
-
-
-                    recipient_id = x['sender']['id']
-                    if x['message'].get('text'):
-                        message = x['message']['text']
-                        bot.send_text_message(recipient_id, message)
-                    if x['message'].get('attachments'):
-                        for att in x['message'].get('attachments'):
-                            bot.send_attachment_url(recipient_id, att['type'], att['payload']['url'])
-                else:
-                    pass
-        return "Success"
-"""
-
 if __name__ == "__main__":
-    print("msg", sendMessage("Hiya, it's Onu!").text)
     app.run(port=5002, debug=True)
