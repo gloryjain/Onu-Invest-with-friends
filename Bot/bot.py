@@ -15,6 +15,7 @@ from uuid import uuid1
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 from apscheduler.executors.pool import ThreadPoolExecutor
+
 from stock_price import *
 
 
@@ -31,6 +32,35 @@ conf = json.loads(open("config.json").read())
 
 locale.setlocale(locale.LC_ALL, ('en_US', 'UTF-8')) # Set locale to en_US
 quandl.ApiConfig.api_key = "V5uEXA4L1zfc9Q6Dp9Lz" # Set API key
+
+
+def checkLikeAmount(msg_id, like_target, ticker, price, div_price, job_id):
+    data = {"token": conf['GM_TOKEN'], "limit": "20", "after_id":msg_id}
+    msgs = requests.get("https://api.groupme.com/v3/groups/" + conf['GM_GROUP'] + "/messages", params=data).json()
+
+    print(msgs['response']['messages'][0])
+    if(len(msgs['response']['messages'][0]['favorited_by']) >= like_target):
+        sendMessage("Confirmed 😊 Investing in "+ticker+"!")
+        sc.remove_job(job_id)
+
+        # Write stock info to file
+        # (Sorry)
+        tmp = {
+            "ticker":ticker,
+            "price":price,
+            "div_price":div_price,
+            "date":str(datetime.now())
+        }
+
+        print(tmp)
+
+        cur = json.loads(open("db.json").read())
+        cur.append(tmp)
+        print(cur)
+        open("db.json", "w").write(json.dumps(cur))
+
+        #todo: do shit
+
 
 
 def sendMessage(msg, img=None):
@@ -95,11 +125,11 @@ def groupme_message():
         if(event == "Buy Stock"):
             ticker = ai['result']['parameters']['StockTickers']
 
-            group_size = 5
+            group_size = 1
             price = get_stock_price(ticker)
             div_price = price / group_size
 
-            msg = "The current price of %s is %s, split among each of %s members, each of you will have to pay %s " \
+            msg = "The current price of %s was %s, split among each of %s members, each of you will have to pay %s " \
                   % (ticker.upper(), locale.currency(price), group_size,locale.currency(div_price))
             sendMessage(msg)
             sendMessage("Favorite THIS message to confirm!") #todo: me send?
