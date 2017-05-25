@@ -1,13 +1,15 @@
 import locale
 from datetime import *
 import quandl
+import matplotlib
 import matplotlib.pyplot as plt
+import tempfile
 
 locale.setlocale(locale.LC_ALL, ('en_US', 'UTF-8')) # Set locale to en_US
 quandl.ApiConfig.api_key = "V5uEXA4L1zfc9Q6Dp9Lz" # Set API key
 
 # Returns price info in a pandas DataFrame
-def get_stock_info(ticker, dataset, suffix, start_date='', end_date=''):
+def get_stock_info(ticker, dataset, suffix='', start_date='', end_date=''):
     return quandl.get(dataset + '/' + ticker.upper() + suffix, start_date=start_date, end_date=end_date)
 
 # Returns end-of-day stock price from the previous day
@@ -24,9 +26,11 @@ def plot_stock_earnings(ticker):
     # Core US Fundamentals Data
     # Earnings per Basic Share (Most Recent - Quarterly)
     data = get_stock_info(ticker, dataset='SF1', suffix='_EPS_MRQ')
-    print data
-    data.plot()
-    # plot
+    plot = data.plot()
+    plt.savefig('sdf')
+    print("TODO Plots not implemented")
+    f = tempfile.NamedTemporaryFile()
+    print(f)
     return data
 
 # Returns stock price in a user-friendly way
@@ -40,10 +44,11 @@ def get_stock_price_friendly(ticker):
         # print e # debug
         return "Sorry, %s is not a valid ticker symbol name." % ticker
 
-# debug
-print get_stock_price_friendly('AAPL')
-print get_stock_price_friendly('GOOG')
-print get_stock_price_friendly('FB')
-print get_stock_price_friendly('COF')
-print get_stock_price_friendly('QWERTY')
-# plot_stock_earnings('AAPL')
+# if __name__ == "__main__":
+# execute only if run as a script
+# print get_stock_price_friendly('AAPL')
+# print get_stock_price_friendly('GOOG')
+# print get_stock_price_friendly('FB')
+# print get_stock_price_friendly('COF')
+# print get_stock_price_friendly('QWERTY')
+plot_stock_earnings('AAPL')
