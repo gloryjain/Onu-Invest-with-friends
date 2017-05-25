@@ -29,6 +29,7 @@ def get_stock_earnings_plot(ticker):
     # Earnings per Basic Share (Most Recent - Quarterly)
     data = get_stock_info(ticker, dataset='SF1', suffix='_EPS_MRQ')
 
+    # Plot graph
     plot = plt.plot(data)
 
     # Save to a temporary file and upload to GroupMe

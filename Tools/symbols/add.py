@@ -4,6 +4,8 @@ import json
 j = []
 
 
+
+
 with open("NASDAQ.txt") as f:
     for stock in f:
 
