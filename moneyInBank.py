@@ -1,6 +1,0 @@
-
-
-#deduct
-
-#show current balance
-
