@@ -1,0 +1,2 @@
+# Stock Packages
+quandl==3.1.0
