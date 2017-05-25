@@ -11,6 +11,7 @@ import quandl
 import locale
 from datetime import *
 from uuid import uuid1
+from dateutil.parser import parse
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
@@ -29,10 +30,25 @@ sc.start()
 
 app = Flask(__name__)
 conf = json.loads(open("config.json").read())
+names = json.loads(open("stocks.json").read())
+
+
 
 locale.setlocale(locale.LC_ALL, ('en_US', 'UTF-8')) # Set locale to en_US
 quandl.ApiConfig.api_key = "V5uEXA4L1zfc9Q6Dp9Lz" # Set API key
 
+
+def getShortURL(url):
+    print("getting bitly of", url)
+
+    resp = requests.get("https://api-ssl.bitly.com/v3/shorten", params = {
+        "domain":"bit.ly", "longUrl":url, "access_token":conf['bitly_token']
+    })
+
+    try:
+        return resp.json()['data']['url']
+    except Exception:
+        return url
 
 def checkLikeAmount(msg_id, like_target, ticker, price, div_price, job_id):
     data = {"token": conf['GM_TOKEN'], "limit": "20", "after_id":msg_id}
@@ -52,11 +68,8 @@ def checkLikeAmount(msg_id, like_target, ticker, price, div_price, job_id):
             "date":str(datetime.now())
         }
 
-        print(tmp)
-
         cur = json.loads(open("db.json").read())
         cur.append(tmp)
-        print(cur)
         open("db.json", "w").write(json.dumps(cur))
 
         #todo: do shit
@@ -136,6 +149,49 @@ def groupme_message():
             prev_msg_id = getMostRecentMSG()
             job_id = str(uuid1())
             sc.add_job(checkLikeAmount, 'interval', args=[prev_msg_id, group_size, ticker, price, div_price, job_id], seconds=10, id=job_id)
+
+        if(event == "Check Status"):
+            stocks = json.loads(open("db.json").read())
+
+            sendMessage("Your portfolio is as follows:")
+
+
+
+            for s in stocks:
+                time = parse(s['date']).strftime("%d/%m/%y at %I:%M%p")
+                price = get_stock_price(s['ticker'])
+
+                msg = "%s was bough on %s for %s (%s each). It is now worth %s. (net %s)" % \
+                      (s['ticker'], time, locale.currency(s['price']),
+                       locale.currency(s['div_price']), locale.currency(price),
+                       locale.currency(price - s['price'])
+                       )
+                sendMessage(msg)
+
+
+
+            pass
+
+        if(event == "Stock Info"):
+            ticker = ai['result']['parameters']['StockTickers']
+
+            endpoint = "https://api.cognitive.microsoft.com/bing/v5.0/news/search"
+            headers = {"Ocp-Apim-Subscription-Key": conf['bing-search-key']}
+            getvars = {"q": names[ticker], "mkt": "en-US"}
+
+            req = requests.get(endpoint, headers=headers, params=getvars).text
+            stories = json.loads(req)['value']
+            print(stories)
+
+            sendMessage("Here are some news stories about "+names[ticker])
+            for story in stories[:4]:
+                sendMessage(story['name'] + ":\n >" + story['description'] +"\n more at" + getShortURL(story['url']))
+
+            pass
+
+
+
+
     else:
         pass
 
@@ -149,5 +205,5 @@ def groupme_message():
 
 
 if __name__ == "__main__":
-    print("msg", sendMessage("Hiya, it's Onu!").text)
+    print("msg", sendMessage("Hiya, it's Onu, your stock investing robot friend! Say 'onu help' to see what I can do!").text)
     app.run(port=5002, debug=True)
