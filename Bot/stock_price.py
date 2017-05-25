@@ -72,7 +72,7 @@ def upload_image(file_path, text=''):
                 ]
             }
     
-    print requests.post('https://api.groupme.com/v3/bots/post', json=msg)
+    print(requests.post('https://api.groupme.com/v3/bots/post', json=msg))
 
 def test():
     # print(get_stock_price_friendly('AAPL'))
