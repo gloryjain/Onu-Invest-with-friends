@@ -8,7 +8,6 @@ def getBalance(customerId):
     #Glorys API key
     apiKey = '89e1407d751d9033c3bf258c76a33e79'
     #apiKey = '508de63e607d501fc1617f4e39315b86' #kims
-    apiKey = '89e1407d751d9033c3bf258c76a33e79'
 
     url = 'http://api.reimaginebanking.com/accounts?type=Checking&key={}'.format(apiKey)
 
