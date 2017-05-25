@@ -12,10 +12,6 @@ import datetime
 names = {"tester1":"5927271dceb8abe24250de57",
 		"tester2":"59272734ceb8abe24250de58"}
 
-def withdrawCentral(total):
-
-
-
 def transfer(moneyTransferred,payerID, receiverID):	
 	url = "http://api.reimaginebanking.com/accounts/"+payerID+"/transfers"
 	querystring = {"key":"89e1407d751d9033c3bf258c76a33e79"}
