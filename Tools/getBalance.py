@@ -22,5 +22,3 @@ def getBalance(customerId):
         if information_dic['customer_id'] == customerId:
             return information_dic['balance']
 
-customerId = '5926f38da73e4942cdafd65b'
-print(getBalance(customerId))
