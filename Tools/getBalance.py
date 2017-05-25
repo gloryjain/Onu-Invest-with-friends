@@ -17,6 +17,7 @@ def getBalance(customerId):
     
     for i in range(0,len(list_response)):
         information_dic = list_response[i]
+        print information_dic
         if information_dic['customer_id'] == customerId and information_dic['type'] == 'Checking':
             return information_dic['balance']
 
