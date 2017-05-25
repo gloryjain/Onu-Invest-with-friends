@@ -5,8 +5,6 @@ import json
 import random
 
 def createAccount(customerId, customer):
-    customerId = customerId
-    customer = customer
     #Glorys API key
     apiKey = '89e1407d751d9033c3bf258c76a33e79'
     accountType = 'Checking'
@@ -42,6 +40,5 @@ def main():
         print('Account creation for', customer, 'was successful')
     else:
         print('Error creating account, please try again')
-    
 
 main()
