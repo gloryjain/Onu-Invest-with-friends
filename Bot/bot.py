@@ -189,6 +189,7 @@ def groupme_message():
 
             pass
 
+        #Command: help, tell me about yourself
         if(event == "Help Stock"):
             sendMessage("Onu help to the rescue!\nHi and welcome, I am Onu and I want to help you be a successful investor.\n " + \
                         "Some of the commands you could use are: \n Onu, tell me about APPL \n Onu, tell me about MSFT \n" + \
@@ -196,8 +197,18 @@ def groupme_message():
             sendMessage("Once you have started investing, I'll be able to tell you about your portfolio. Just use: \n Onu status or Onu portfolio")
             sendMessage("Go ahead, try it.")
 
-        #if(event == ""):
-            
+        #How to invest
+        if(event == "Help Invest"):
+            url = getShortURL()
+            sendMessage("It's actually very easy to start investing. Thank's to the technologies provided by Capital One Investments" + \
+                        "I can help you invest in stocks that you and your friends can afford. If this is your first time" + \
+                        "investing, fear no more! To start feel free to check this link out further: https://www.capitalone.com/financial-education/ for" + \
+                        "more on understanding credit and basics or not! Just ask me about stock prices or even 'what is a stock?'. I can tryyyy and help.")
+
+        #What is a stock
+        if(event == "Info Stock"):
+            url = getShortURL('https://content.capitaloneinvesting.com/mgdcon/knowledgecenter/Trade/Stocks/what_is_a_stock/what-is-a-stock.htm')
+            sendMessage("Sooooo, yeah what is a stock? Let's ask Capital One! Check this out:" + url + " They're better at explaining than I am tbh...")
 
     else:
         pass
