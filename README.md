@@ -31,6 +31,7 @@ Our python server(Bot/Bot.py) is the main server that runs our whole bot.
  - [Flask](https://www.fullstackpython.com/flask.html) for UI
  - [Bootstrap](http://getbootstrap.com) for UI
  - [SB 2 Admin](https://github.com/kaushikraj/sb-admin-2-flask-admin) for UI
+ - [ngrok](https://ngrok.com) for securing UI
  
  #### Team Members: Kyle Feng, Ben Stobaugh, Kim Santiago, Kobi Felton, Glory Jain
  **Disclaimer: The creators of this app are not responsible for any financial losses/damages
