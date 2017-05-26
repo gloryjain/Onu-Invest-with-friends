@@ -27,7 +27,7 @@ incurred through the use of this app.**
 #### Team Members: Kyle Feng, Ben Stobaugh, Kim Santiago, Kobi Felton, Glory Jain
 
 #### APIs and Frameworks Used
- - [CapitalOne Nessie API](http://api.reimaginebanking.com/)
+ - [CapitalOne Nessie API](http://api.reimaginebanking.com/) for coolness and very essential stuff
  - GroupMe API for chat
  - API.AI for natural language processing
  - [Quandl](https://www.quandl.com/data/SF1-Core-US-Fundamentals-Data/documentation/about) for stock data
