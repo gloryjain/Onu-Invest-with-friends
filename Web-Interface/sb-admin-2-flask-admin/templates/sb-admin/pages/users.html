@@ -32,7 +32,7 @@
 		{{panel_thing("Chat with Onu!", "comments", "onu-blue", "https://web.groupme.com/chats")}}
 	</div>
 	<div class="col-lg-6 col-md-6">
-		{{panel_thing("View users", "users", "onu-blue", "#")}}
+		{{panel_thing("View portfolio", "briefcase", "onu-blue", "#")}}
 	</div>
 </div>
 
@@ -59,12 +59,13 @@ body {
 
 </style>
 
+<!-- Trust balance -->
 <div class="panel panel-default">
 	<div class="panel-body">
 		<div class="row">
 			<div class="text-center col-md-12">
 				<div class="stock-info-header">Trust balance</div>
-				<div class="stock-info">${{ helpers.getBalance('592713e0ceb8abe24250de29') }} </div>
+				<div class="stock-info">{{ locale.currency(helpers.getBalance('592713e0ceb8abe24250de29')) }} </div>
 			</div>
 		</div>
 	</div>
@@ -72,38 +73,25 @@ body {
 
 <div class="panel panel-default">
 	<div class="panel-heading">
-		<h3 class="panel-title">Stocks</h3>
+		<h3 class="panel-title">Users</h3>
 	</div>
 	<div class="panel-body">
-	{% for stock in db %}
-		<div class="panel">
-			<div class="panel-heading onu-blue">
-				<h3 class="panel-title">{{ stock['ticker'] }}</h3> <!-- TODO add stock NASDQ name-->
-			</div>
-			<div class="panel-body">
-				<div class="col-md-3">
-					<div class='stock-info-header'>Acquired since</div>
-					<div class='stock-info'>{{ stock['pretty_date'] }}</div>
-				</div>
-				<div class="col-md-3">
-					<div class='stock-info-header'>Starting Price</div>
-					<div class='stock-info'>${{ stock['price'] }}</div>
-				</div>
-				<div class="col-md-3">
-					<div class='stock-info-header'>Current Price</div>
-					<div class='stock-info'>${{ stock['current_price'] }}</div>
-				</div>
-				<div class="col-md-3">
-					<div class='stock-info-header'>Change</div>
-					{% if stock['price_difference'] > 0 %}
-					<div class='stock-info text-success'><span class='glyphicon glyphicon-arrow-up'></span> ${{ stock['price_difference'] }}</div>
-					{% else %}
-					<div class='stock-info text-danger'><span class='glyphicon glyphicon-arrow-down'></span> -${{ -stock['price_difference'] }}</div>
-					{% endif %}
-				</div>
-			</div>
-		</div>
-	{% endfor %}
+	<table class="table">
+		<thead>
+			<tr>
+				<td>Name</td>
+				<td>Amount</td>
+			</tr>
+		</thead>
+		<tbody>
+			{% for acct in accts %}
+			<tr>
+				<td style="font-size: 20px">{{ acct['name']  }}</td>
+				<td style="font-size: 20px">{{ acct['bal']  }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
 	</div>
 </div>
 
