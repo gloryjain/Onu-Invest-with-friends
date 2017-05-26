@@ -116,7 +116,7 @@
                     <a href="{{url_for('admin.index')}}"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
                 </li>
                 <li>
-                    <a href="{{url_for('admin.users')}}"><i class="fa fa-users fa-fw"></i> Users</a>
+                    <a href="{{url_for('admin.users')}}"><i class="fa fa-table fa-fw"></i> Users</a>
                 </li>
             </ul>
         </div>

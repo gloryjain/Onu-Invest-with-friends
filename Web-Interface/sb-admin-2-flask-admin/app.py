@@ -46,7 +46,7 @@ init_login()
 
 # Create admin
 admin = admin.Admin(app, 
-    'SB-Admin-2', 
+    'Onu', 
     index_view=AdminIndexView())
 #admin.add_view(BlankView(name='Blank', url='blank', endpoint='blank'))
 
