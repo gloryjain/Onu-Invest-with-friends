@@ -1,0 +1,7 @@
+Stock prices
+Portfolio
+C1 account
+GroupMe account
+Name
+Total amount of funds in joint account (scrape from Nessie)
+

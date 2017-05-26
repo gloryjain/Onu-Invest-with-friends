@@ -2,7 +2,7 @@
 This bot listens to port 5002 for incoming connections from Facebook. It takes
 in any messages that the bot receives and echos it back.
 """
-from flask import Flask, request
+from flask import Flask, request, render_template
 import requests
 import json
 import string
@@ -38,6 +38,9 @@ locale.setlocale(locale.LC_ALL, ('en_US', 'UTF-8')) # Set locale to en_US
 quandl.ApiConfig.api_key = "V5uEXA4L1zfc9Q6Dp9Lz" # Set API key
 
 
+verify = {}
+
+
 def getShortURL(url):
     print("getting bitly of", url)
 
@@ -56,7 +59,7 @@ def checkLikeAmount(msg_id, like_target, ticker, price, div_price, job_id):
 
     print(msgs['response']['messages'][0])
     if(len(msgs['response']['messages'][0]['favorited_by']) >= like_target):
-        sendMessage("Confirmed 😊 Investing in "+ticker+"!")
+        sendMessage("Confirmed 😊 Investing in "+names[ticker]+"!")
         sc.remove_job(job_id)
 
         # Write stock info to file
@@ -73,6 +76,21 @@ def checkLikeAmount(msg_id, like_target, ticker, price, div_price, job_id):
         open("db.json", "w").write(json.dumps(cur))
 
         #todo: do shit
+        transferFundsToPoolAccount(price)
+        id = str(uuid1())
+        verify[id] = {"ticker":ticker, "price":price}
+
+        resp = requests.post(
+            "https://api.mailgun.net/v3/send.helloben.co/messages",
+            auth=("api", conf['mg_secret']),
+            data={"from": "Onu <onu@send.helloben.co>",
+                  "to": ["<Ben Stobuagh> legoben1998@gmail.com"],
+                  "subject": "Please Confirm Transaction!",
+                  "text": "Hi Ben!\n\n In order for your order for one share of "+names[ticker]+" ("+ticker+
+                           ") to go through, please click on the link below. \n THIS WILL BUY THE SHARE FOR "+
+                           locale.currency(price)+"!\n\n http://c1.ngrok.io/verify/"+id+" \n\nThanks!"})
+        print(resp.text)
+
 
 
 
@@ -106,6 +124,120 @@ def getMostRecentMSG():
         m = msgs['response']['messages'][i]
         if(m['sender_type'] == 'bot'):
             return msgs['response']['messages'][i+1]["id"]
+
+
+def getBalance(customerId):
+    # Glorys API key
+    apiKey = '89e1407d751d9033c3bf258c76a33e79'
+    # apiKey = '508de63e607d501fc1617f4e39315b86' #kims
+    # apiKey = '89e1407d751d9033c3bf258c76a33e79'
+
+    url = 'http://api.reimaginebanking.com/accounts?type=Checking&key={}'.format(apiKey)
+
+    response = requests.get(url, )
+
+    list_response = list(response.json())
+
+    for i in range(0, len(list_response)):
+        information_dic = list_response[i]
+        # print 'Nickname: ',information_dic['nickname'],'Account ID:', information_dic['_id'], 'Customer Id:',information_dic['customer_id']
+        if information_dic['customer_id'] == customerId:
+            return information_dic['balance']
+
+def getMembers():
+    token = 'd98e567023a601356f8c53d177af4f91'
+    groupId = '31349787'
+
+    url = 'https://api.groupme.com/v3/groups/{}?token={}'.format(groupId, token)
+    response = requests.get(url, )
+
+    list_response = dict(response.json())
+    list_response = list_response['response']
+    # print list_response['members']
+    members = []
+
+    list_response = list_response['members']
+
+    for i in range(0, len(list_response)):
+        person = (list_response[i]['nickname']).split()[0]
+        # print person
+        members.append(str(person))
+
+    return members
+
+def transferFundsToPoolAccount(amount=0):
+    sendMessage("Beginning Buy 😲 ... ")
+
+    # Get current people in group
+    groupMembers = getMembers()
+
+    apiKey = '89e1407d751d9033c3bf258c76a33e79'
+    receiver_id = '59271490ceb8abe24250de2f'
+
+    url = 'http://api.reimaginebanking.com/customers?key={}'.format(apiKey)
+    response = requests.get(url, )
+    list_response2 = list(response.json())
+
+    customer_ids = []
+    account_ids = []
+
+    for i in range(0, len(list_response2)):
+        info = list_response2[i]
+        first = info['first_name']
+        customer_id = info['_id']
+        if first in groupMembers:
+            customer_ids.append(customer_id)
+    # print customer_ids
+    url = 'http://api.reimaginebanking.com/accounts?type=Checking&key={}'.format(apiKey)
+    response = requests.get(url, )
+    list_response = list(response.json())
+
+    for i in range(0, len(list_response)):
+        info = list_response[i]
+        # print info
+        customer_id = str(info['customer_id'])
+        if customer_id in customer_ids:
+            # print 'Found customer id in list'
+            account_id = info['_id']
+            account_ids.append(str(account_id))
+
+    divideBy = len(account_ids)
+    contributedAmount = amount / divideBy
+
+    for i in range(0, len(account_ids)):
+        time = str(date.today())
+        url = 'http://api.reimaginebanking.com/accounts/{}/transfers?key={}'.format(account_ids[i], apiKey)
+        payload = {
+            'medium': 'balance',
+            'payee_id': receiver_id,
+            'amount': contributedAmount,
+            'transaction_date': time,
+            'description': 'Transferring ' + str(contributedAmount) + ' to Pool Account'
+        }
+
+        response = requests.post(
+            url,
+            data=json.dumps(payload),
+            headers={'content-type': 'application/json'},
+        )
+
+    sendMessage("Successfully transferred funds into joint Capital One Account!  😄😄😄" )
+    sendMessage("A confirmation email has been sent to the group owner. Clicking on the link will complete the transaction.")
+
+
+def withdrawCentral(total):
+    url = "http://api.reimaginebanking.com/accounts/59271490ceb8abe24250de2f/withdrawals"
+    querystring = {"key": "89e1407d751d9033c3bf258c76a33e79"}
+    payload = json.dumps({"medium": "balance", "transaction_date": str(date.today()), "amount": total,
+                          "description": "buying the stock!!"})
+
+    headers = {
+        'content-type': "application/json",
+        'cache-control': "no-cache",
+    }
+
+    response = requests.request("POST", url, data=payload, headers=headers, params=querystring)
+    print(response.text)
 
 
 
@@ -161,7 +293,7 @@ def groupme_message():
                 time = parse(s['date']).strftime("%d/%m/%y at %I:%M%p")
                 price = get_stock_price(s['ticker'])
 
-                msg = "%s was bough on %s for %s (%s each). It is now worth %s. (net %s)" % \
+                msg = "%s was bought on %s for %s (%s each). It is now worth %s. (net %s)" % \
                       (s['ticker'], time, locale.currency(s['price']),
                        locale.currency(s['div_price']), locale.currency(price),
                        locale.currency(price - s['price'])
@@ -183,12 +315,15 @@ def groupme_message():
             stories = json.loads(req)['value']
             print(stories)
 
-            sendMessage("Here are some news stories about "+names[ticker])
+            sendMessage("Here are some news stories about "+names[ticker] + " 😄")
             for story in stories[:4]:
-                sendMessage(story['name'] + ":\n >" + story['description'] +"\n more at" + getShortURL(story['url']))
+                sendMessage(story['name'] + ": " + story['description'] +" - " + getShortURL(story['url']))
 
             pass
+            url = "https://finance.yahoo.com/quote/" + ticker + "/?p=" + ticker
+            sendMessage("Also see Yahoo Finance: " + url)
 
+        #Command: help, tell me about yourself
         if(event == "Help Stock"):
             sendMessage("Onu help to the rescue!\nHi and welcome, I am Onu and I want to help you be a successful investor.\n " + \
                         "Some of the commands you could use are: \n Onu, tell me about APPL \n Onu, tell me about MSFT \n" + \
@@ -196,8 +331,22 @@ def groupme_message():
             sendMessage("Once you have started investing, I'll be able to tell you about your portfolio. Just use: \n Onu status or Onu portfolio")
             sendMessage("Go ahead, try it.")
 
-        #if(event == ""):
-            
+
+        if(event == "Default Fallback Intent"):
+            sendMessage("Sorry, I don't understand 😞")
+
+        #How to invest
+        if(event == "Help Invest"): #todo: add to api.ai
+            url = getShortURL()
+            sendMessage("It's actually very easy to start investing. Thank's to the technologies provided by Capital One Investments" + \
+                        "I can help you invest in stocks that you and your friends can afford. If this is your first time" + \
+                        "investing, fear no more! To start feel free to check this link out further: https://www.capitalone.com/financial-education/ for" + \
+                        "more on understanding credit and basics or not! Just ask me about stock prices or even 'what is a stock?'. I can tryyyy and help.")
+
+        #What is a stock
+        if(event == "Info Stock"): #todo: add to api.ai
+            url = getShortURL('https://content.capitaloneinvesting.com/mgdcon/knowledgecenter/Trade/Stocks/what_is_a_stock/what-is-a-stock.htm')
+            sendMessage("Sooooo, yeah what is a stock? Let's ask Capital One! Check this out:" + url + " They're better at explaining than I am tbh...")
 
     else:
         pass
@@ -208,6 +357,39 @@ def groupme_message():
     return "okay"
 
 
+@app.route("/verify/<uid>")
+def verify_transaction(uid):
+    sendMessage("Transaction has been verified! Buying on share of "+verify[uid]['ticker'])
+    withdrawCentral(verify[uid]['price'])
+    sendMessage("Congrats! You are collectively the new owner of one share of "+names[verify[uid]['ticker']] + "! 🤑")
+    sendMessage("You can check the status of your investments by saying 'Onu status'")
+    return "success"
+    pass
+
+
+
+@app.route("/admin/list")
+def list_accts():
+    accts = [
+        {"name":"Glory Jain", "id":"592713b4ceb8abe24250de24"},
+        {"name":"Kim Santiago", "id":"592713baceb8abe24250de25"},
+        {"name":"Kyle Feng", "id":"592713bcceb8abe24250de26"},
+        {"name":"Ben Stobaugh", "id":"592713bfceb8abe24250de27"},
+        {"name":"Kobi Felton", "id":"592713c2ceb8abe24250de28"},
+        {"name":"CENTRAL ACCT", "id":"592713e0ceb8abe24250de29"},
+     ]
+
+
+    str = ""
+
+    for acct in accts:
+        acct['bal'] = locale.currency(getBalance(acct['id']))
+
+    return render_template("list.html", accts=accts)
+
+@app.route("/")
+def home():
+    return "<br><br><br><br><h1 style='text-align:center;'>O N U</h1>"
 
 
 

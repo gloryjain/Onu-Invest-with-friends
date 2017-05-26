@@ -1,0 +1,20 @@
+<table>
+    <thead>
+        <tr>
+            <td>
+                Name
+            </td>
+            <td>
+                Amount
+            </td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for acct in accts %}
+            <tr>
+                <td>{{ acct['name'] }}</td>
+                <td>{{ acct['bal'] }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

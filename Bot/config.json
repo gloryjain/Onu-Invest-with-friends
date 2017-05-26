@@ -6,5 +6,7 @@
   "GM_GROUP":"31349787",
   "QUANDL_KEY":"V5uEXA4L1zfc9Q6Dp9Lz",
   "bing-search-key":"c589964bbc6e45dda8886c72031e0dfe",
-  "bitly_token":"910d442d96a1408cebe33ccd84ced9bcb80b6b02"
+  "bitly_token":"910d442d96a1408cebe33ccd84ced9bcb80b6b02",
+  "mg_key":"pubkey-d63ca9a839a63db9c614793de1d1d719",
+  "mg_secret":"key-efe407e38b0ce3a251d01b74ab38d775"
 }
