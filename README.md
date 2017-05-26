@@ -29,9 +29,9 @@ incurred through the use of this app.**
 #### APIs and Frameworks Used
  - [CapitalOne Nessie API](http://api.reimaginebanking.com/) for coolness and very essential stuff
  - [GroupMe](https://dev.groupme.com) API for chat
- - [API.AI](api.ai) for natural language processing
+ - [API.AI](https://api.ai) for natural language processing
  - [Quandl](https://www.quandl.com/data/SF1-Core-US-Fundamentals-Data/documentation/about) for stock data
- - [Bing](bing.com) for news 
+ - [Bing](https://www.bing.com) for news 
  - [Mailgun](https://www.mailgun.com) for email confirmations
  - [Flask](https://www.fullstackpython.com/flask.html) for UI
  - [Bootstrap](http://getbootstrap.com) for UI
