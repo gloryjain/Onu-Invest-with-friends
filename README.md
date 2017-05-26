@@ -38,11 +38,11 @@ Our python server(Bot/Bot.py) is the main server that runs our whole bot.
  # How to run this bot and UI
  The keys, group id, and authentication tokens need to be filled in prior to starting  the program. These can be set up in the config.json file.
  To run the bot:
- '''
+ ```
  git clone https://github.com/C1-SoftwareEngineeringSummit/team3.git
  cd Bot
  python3 bot.py
- '''
+ ```
  To run the UI:
  
  
