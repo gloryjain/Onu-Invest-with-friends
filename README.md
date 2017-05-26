@@ -11,6 +11,9 @@ Onu is a chatbot designed to help people start investing with friends, making it
 
 # How does it work?
 
+<p align="center">
+  <img src="team3/Screen Shot 2017-05-26 at 11.15.32 AM.png" width="350"/>
+</p>
 1. Set up a GroupMe with a group of friends
 2. Learn about investing and stocks
 3. Choose stocks with the help of Onu
