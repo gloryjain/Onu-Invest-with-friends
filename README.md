@@ -44,8 +44,10 @@ Our python server(Bot/Bot.py) is the main server that runs our whole bot.
  python3 bot.py
  ```
  To run the UI:
- 
- 
+ ```
+ cd Web-Interfaces
+ ./ngrok http 5002
+ ```
  #### Team Members: Kyle Feng, Ben Stobaugh, Kim Santiago, Kobi Felton, Glory Jain
  **Disclaimer: The creators of this app are not responsible for any financial losses/damages
 incurred through the use of this app.**
