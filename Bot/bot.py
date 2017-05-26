@@ -332,11 +332,10 @@ def groupme_message():
 
         #Command: help, tell me about yourself
         if(event == "Help Stock"):
-            sendMessage("Onu help to the rescue!\nHi and welcome, I am Onu and I want to help you be a successful investor.\n " + \
-                        "Some of the commands you could use are: \n Onu, tell me about APPL \n Onu, tell me about MSFT \n" + \
-                            "Onu, what are stocks? \n Onu, how can I invest? \n Onu, tell me more about APPL")
-            sendMessage("Once you have started investing, I'll be able to tell you about your portfolio. Just use: \n Onu status or Onu portfolio")
-            sendMessage("Go ahead, try it.")
+            sendMessage("Hi, I'm Onu, a bot that helps you and your friends invest.\n " + \
+                        "Here are some sample commands: \n You can ask about a specific stock. For example to ask about Apple, type:" + '"Onu, tell me about APPL."' +
+            sendMessage("When you are ready to buy a stock, just say" + '"invest in."'+ 'For example, say "Onu, invest in AAPL."' )
+            sendMessage("Once you have started investing, I'll be able to tell you about your portfolio. Just use:" + '\n "Onu status" or "Onu portfolio"')
 
 
         if(event == "Default Fallback Intent"):
