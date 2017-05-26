@@ -12,8 +12,10 @@ Onu is a chatbot designed to help people start investing with friends, making it
 # How does it work?
 
 1. Set up a GroupMe with a group of friends
-2. Choose stocks with the help of Onu
-3. Buy a stock directly through GroupMe
+2. Learn about investing and stocks
+3. Choose stocks with the help of Onu
+4. Buy a stock directly through GroupMe using Onu
+5. Keep track of your portfolio through the UI
 
 The app interacts with a CapitalOne _trust_ account that is the central place for your group investing.
 
