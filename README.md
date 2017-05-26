@@ -2,7 +2,7 @@
 
 # Why?
 
-The earlier you start investing, the better.  _(fill in info from better inveseting her)_
+The earlier you start investing, the better.
 
 However, millenials are investing [less than previous generations](http://www.businessinsider.com/why-so-few-millennials-invest-in-the-stock-market-2016-7).
 So, the question is, how can we make it easier for students to invest?
@@ -12,7 +12,7 @@ Onu is a chatbot designed to help people start investing with friends, making it
 # How does it work?
 
 The highlight of Onu is investing with your friends.
-The first thing you do is to set up a _trust_ *(not sure if this is the right term)*
+The first thing you do is to set up a _trust_
 with your friends. Each person can contribute some money to the trust, which will be
 used to make investments.
 
@@ -27,11 +27,13 @@ incurred through the use of this app.**
 #### Team Members: Kyle Feng, Ben Stobaugh, Kim Santiago, Kobi Felton, Glory Jain
 
 #### APIs and Frameworks Used
- - GroupMe
- - API.IO
-
- - Flask
- - Jinja
- - Bootstrap
- - [SB 2 Admin](https://github.com/kaushikraj/sb-admin-2-flask-admin)
+ - [CapitalOne Nessie API](http://api.reimaginebanking.com/) for coolness and very essential stuff
+ - [GroupMe](https://dev.groupme.com) API for chat
+ - [API.AI](https://api.ai) for natural language processing
+ - [Quandl](https://www.quandl.com/data/SF1-Core-US-Fundamentals-Data/documentation/about) for stock data
+ - [Bing](https://www.bing.com) for news 
+ - [Mailgun](https://www.mailgun.com) for email confirmations
+ - [Flask](https://www.fullstackpython.com/flask.html) for UI
+ - [Bootstrap](http://getbootstrap.com) for UI
+ - [SB 2 Admin](https://github.com/kaushikraj/sb-admin-2-flask-admin) for UI
  

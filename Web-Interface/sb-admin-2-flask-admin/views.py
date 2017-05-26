@@ -7,8 +7,12 @@ from loginform import LoginForm
 import stub as stub
 import json
 import datetime
+import locale
 
 import stock_price #local
+import helpers as myhelpers #local
+
+locale.setlocale(locale.LC_ALL, ('en_US', 'UTF-8')) # Set locale to en_US
                        
 # Create customized index view class that handles login & registration
 class AdminIndexView(admin.AdminIndexView):
@@ -53,7 +57,7 @@ class AdminIndexView(admin.AdminIndexView):
             stock['current_price'] = stock_price.get_stock_price(stock['ticker'])
             stock['price_difference'] = (stock['current_price'] - stock['price'])
 
-        return render_template('sb-admin/pages/dashboard.html', admin_view=self, db=db)
+        return render_template('sb-admin/pages/dashboard.html', admin_view=self, db=db, helpers=myhelpers, locale=locale)
     
     @expose('/blank')
     def blank(self):        
@@ -98,7 +102,18 @@ class AdminIndexView(admin.AdminIndexView):
             
         self._stubs()    
         self.header = "Users"
-        return render_template('sb-admin/pages/users.html', admin_view=self)         
+
+        accts = [ {"name":"Glory Jain", "id":"592713b4ceb8abe24250de24"},
+                {"name":"Kim Santiago", "id":"592713baceb8abe24250de25"},
+                {"name":"Kyle Feng", "id":"592713bcceb8abe24250de26"},
+                {"name":"Ben Stobaugh", "id":"592713bfceb8abe24250de27"},
+                {"name":"Kobi Felton", "id":"592713c2ceb8abe24250de28"},
+                {"name":"CENTRAL ACCT", "id":"592713e0ceb8abe24250de29"}, ]
+
+        for acct in accts:
+            acct['bal'] = locale.currency(myhelpers.getBalance(acct['id']))
+
+        return render_template('sb-admin/pages/users.html', admin_view=self, accts=accts, helpers=myhelpers, locale=locale)
         
     @expose('/ui/panelswells')
     def panelswells(self):        
