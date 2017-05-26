@@ -39,7 +39,7 @@ def get_stock_earnings_plot(ticker):
     plt.ylabel('Price')
     title = 'Earnings for %s' % ticker
     plt.title(title)
-    plt.savefig(f.name, frameon=False, facecolor='#f7f7f7')
+    plt.savefig(f.name, frameon=False, facecolor='#f7f7f7g')
     #ax = fig.gca()
     #ax.legend_.remove()
     upload_image(f.name, "Quarterly earnings for " + ticker.upper())
@@ -79,7 +79,9 @@ def upload_image(file_path, text=''):
                 ]
             }
 
-    print requests.post('https://api.groupme.com/v3/bots/post', json=msg)
+
+    print(requests.post('https://api.groupme.com/v3/bots/post', json=msg))
+
 
 def test():
     # print(get_stock_price_friendly('AAPL'))

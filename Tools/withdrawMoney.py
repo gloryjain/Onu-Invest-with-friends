@@ -15,5 +15,3 @@ def withdrawCentral(total):
 
 	response = requests.request("POST", url, data=payload, headers=headers, params=querystring)
 	print(response.text)
-
-withdrawCentral(500)
