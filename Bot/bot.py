@@ -119,7 +119,7 @@ def groupme_message():
         return "nope"
 
     if(msg.lower().find("onu") != -1):
-        print("omu here")
+        print("onu here")
         sendtxt = msg.replace(",", "").replace("onu", "") #todo: regex
         ai = getNLP(sendtxt)
         print(ai)
@@ -189,8 +189,15 @@ def groupme_message():
 
             pass
 
+        if(event == "Help Stock"):
+            sendMessage("Onu help to the rescue!\nHi and welcome, I am Onu and I want to help you be a successful investor.\n " + \
+                        "Some of the commands you could use are: \n Onu, tell me about APPL \n Onu, tell me about MSFT \n" + \
+                            "Onu, what are stocks? \n Onu, how can I invest? \n Onu, tell me more about APPL")
+            sendMessage("Once you have started investing, I'll be able to tell you about your portfolio. Just use: \n Onu status or Onu portfolio")
+            sendMessage("Go ahead, try it.")
 
-
+        #if(event == ""):
+            
 
     else:
         pass
