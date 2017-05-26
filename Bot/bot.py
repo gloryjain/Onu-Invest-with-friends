@@ -246,6 +246,8 @@ def groupme_message():
     print("hiya")
     j = request.json
     msg = j['text']
+    group_size = 1
+
 
     if(j['sender_type'] == 'bot'):
         return "nope"
@@ -261,7 +263,7 @@ def groupme_message():
         event = ai['result']['metadata']['intentName']
 
         if(event == "Price of stock"):
-            ticker = ai['result']['parameters']['StockTickers'] #todo: no full full names
+            ticker = ai['result']['parameters']['StockTickers']
             print("ticker", ticker)
             price = get_stock_price_friendly(ticker)
             print(price)
@@ -270,7 +272,6 @@ def groupme_message():
         if(event == "Buy Stock"):
             ticker = ai['result']['parameters']['StockTickers']
 
-            group_size = 1
             price = get_stock_price(ticker)
             div_price = price / group_size
 
@@ -326,8 +327,8 @@ def groupme_message():
         #Command: help, tell me about yourself
         if(event == "Help Stock"):
             sendMessage("Onu help to the rescue!\nHi and welcome, I am Onu and I want to help you be a successful investor.\n " + \
-                        "Some of the commands you could use are: \n Onu, tell me about APPL \n Onu, tell me about MSFT \n" + \
-                            "Onu, what are stocks? \n Onu, how can I invest? \n Onu, tell me more about APPL")
+                        "Some of the commands you could use are: \nOnu, what is the price of MSFT? \n" + \
+                        "Onu, what are stocks? \n Onu, how can I invest? \n Onu, tell me more about APPL")
             sendMessage("Once you have started investing, I'll be able to tell you about your portfolio. Just use: \n Onu status or Onu portfolio")
             sendMessage("Go ahead, try it.")
 
@@ -336,15 +337,20 @@ def groupme_message():
             sendMessage("Sorry, I don't understand 😞")
 
         #How to invest
-        if(event == "Help Invest"): #todo: add to api.ai
-            url = getShortURL()
+        if(event == "Help Invest"):
             sendMessage("It's actually very easy to start investing. Thank's to the technologies provided by Capital One Investments" + \
                         "I can help you invest in stocks that you and your friends can afford. If this is your first time" + \
                         "investing, fear no more! To start feel free to check this link out further: https://www.capitalone.com/financial-education/ for" + \
                         "more on understanding credit and basics or not! Just ask me about stock prices or even 'what is a stock?'. I can tryyyy and help.")
 
         #What is a stock
-        if(event == "Info Stock"): #todo: add to api.ai
+        if(event == "Account Balance"):
+            bal = getBalance("592713e0ceb8abe24250de29")
+            sendMessage("The current balance of the main account is "+ locale.currency(bal))
+
+
+
+        if(event == "Info Stock"):
             url = getShortURL('https://content.capitaloneinvesting.com/mgdcon/knowledgecenter/Trade/Stocks/what_is_a_stock/what-is-a-stock.htm')
             sendMessage("Sooooo, yeah what is a stock? Let's ask Capital One! Check this out:" + url + " They're better at explaining than I am tbh...")
 
@@ -359,7 +365,7 @@ def groupme_message():
 
 @app.route("/verify/<uid>")
 def verify_transaction(uid):
-    sendMessage("Transaction has been verified! Buying on share of "+verify[uid]['ticker'])
+    sendMessage("Transaction has been verified! Buying one share of "+verify[uid]['ticker'])
     withdrawCentral(verify[uid]['price'])
     sendMessage("Congrats! You are collectively the new owner of one share of "+names[verify[uid]['ticker']] + "! 🤑")
     sendMessage("You can check the status of your investments by saying 'Onu status'")
@@ -378,7 +384,6 @@ def list_accts():
         {"name":"Kobi Felton", "id":"592713c2ceb8abe24250de28"},
         {"name":"CENTRAL ACCT", "id":"592713e0ceb8abe24250de29"},
      ]
-
 
     str = ""
 
