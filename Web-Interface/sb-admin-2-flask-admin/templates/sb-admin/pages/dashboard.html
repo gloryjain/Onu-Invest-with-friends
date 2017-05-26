@@ -1,0 +1,118 @@
+<!-- extend base layout -->
+{% extends "sb-admin/master.html" %}
+
+{% from "sb-admin/macros/dashboard/counticon.html" import count_icon %}
+{% from "sb-admin/macros/dashboard/areachart.html" import area_chart %}
+{% from "sb-admin/macros/dashboard/barchart.html" import bar_chart %}
+{% from "sb-admin/macros/dashboard/timeline.html" import timeline %}
+{% from "sb-admin/macros/dashboard/notification.html" import notification %}
+{% from "sb-admin/macros/dashboard/donut.html" import donut %}
+{% from "sb-admin/macros/dashboard/chat.html" import chat %}
+
+{% macro panel_thing(name, icon, panelStyle, link) -%}
+<a href="{{link}}">
+	<div class="panel {{panelStyle}}"}}>
+		<div class="panel-heading">
+			<div class="row">
+				<div class="col-xs-3">
+					<i class="fa fa-{{icon}} fa-5x"></i>
+				</div>
+				<div class="col-xs-9 text-right">
+					<div class="huge" style="vertical-align: middle;">{{ name }}</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</a>
+{% endmacro %}
+
+{% block body %}
+<div class="row">
+	<div class="col-lg-3 col-md-6">
+		{{panel_thing("Chat with Onu!", "comments", "onu-blue", "https://web.groupme.com/chats")}}
+	</div>
+	<div class="col-lg-3 col-md-6">
+		{{panel_thing("View portfolio", "briefcase", "onu-blue", "#")}}
+	</div>
+</div>
+
+<style>
+body {
+	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+}
+
+.stock-info-header {
+	font-weight: 300;
+	font-size: 20px;
+}
+
+.stock-info {
+	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+	font-weight: 300;
+	font-size: 40px;
+}
+
+.onu-blue {
+	background-color: rgba(0, 190, 255, 100);
+	color: #fff;
+}
+
+</style>
+
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h3 class="panel-title">Stocks</h3>
+	</div>
+	<div class="panel-body">
+	{% for stock in db %}
+		<div class="panel">
+			<div class="panel-heading onu-blue">
+				<h3 class="panel-title">{{ stock['ticker'] }}</h3> <!-- TODO add stock NASDQ name-->
+			</div>
+			<div class="panel-body">
+				<div class="col-md-4">
+					<div class='stock-info-header'>Acquired since</div>
+					<div class='stock-info'>{{ stock['pretty_date'] }}</div>
+				</div>
+				<div class="col-md-4">
+					<div class='stock-info-header'>Starting Price</div>
+					<div class='stock-info'>${{ stock['price'] }}</div>
+				</div>
+				<div class="col-md-4">
+					<div class='stock-info-header'>Current Price</div>
+					<div class='stock-info'>${{ get_stock_price(stock['ticker']) }}</div>
+				</div>
+			</div>
+		</div>
+	{% endfor %}
+	</div>
+</div>
+
+<!--
+	{#
+<div class="row">
+    <div class="col-lg-8">
+        {{bar_chart("Bar Chart Example")}}
+        {{timeline("Responsive Timeline")}}
+    </div>
+    <div class="col-lg-4">
+        {{notification("Notifications Panel")}}
+        {{donut("Donut Chart Example")}}
+        {{chat("Chat")}}
+    </div>
+</div>
+#}
+-->
+	
+{% endblock %}
+
+{% block tail %}
+
+    <!-- Timeline CSS -->
+    <link href="/dist/css/timeline.css" rel="stylesheet">
+
+    <!-- Morris Charts JavaScript -->
+    <script src="/bower_components/raphael/raphael-min.js"></script>
+    <script src="/bower_components/morrisjs/morris.min.js"></script>
+    <script src="/js/morris-data.js"></script>
+{% endblock %}
