@@ -27,14 +27,21 @@ def get_stock_price(ticker):
 def get_stock_earnings_plot(ticker):
     # Core US Fundamentals Data
     # Earnings per Basic Share (Most Recent - Quarterly)
-    data = get_stock_info(ticker, dataset='SF1', suffix='_EPS_MRQ')
-
+    five_years = 365*5
+    five_years = (datetime.now() - timedelta(days=five_years)).strftime('%Y-%m-%d')
+    data = get_stock_info(ticker, dataset='SF1', suffix='_EPS_MRQ', start_date=five_years)
     # Plot graph
     plot = plt.plot(data)
 
     # Save to a temporary file and upload to GroupMe
     f = tempfile.NamedTemporaryFile(suffix='.png', delete=False) # open temporary file
-    plt.savefig(f.name)
+    plt.xlabel('Time')
+    plt.ylabel('Price')
+    title = 'Earnings for %s' % ticker
+    plt.title(title)
+    plt.savefig(f.name, frameon=False, facecolor='#f7f7f7')
+    #ax = fig.gca()
+    #ax.legend_.remove()
     upload_image(f.name, "Quarterly earnings for " + ticker.upper())
     return f.name # image picture filepath
 
@@ -54,12 +61,12 @@ def upload_image(file_path, text=''):
     headers = { 'Content-Type': 'image/jpeg',
                 'X-Access-Token': 'd98e567023a601356f8c53d177af4f91' # GM_TOKEN
                 }
-    
+
     url = ''
     with open(file_path, 'rb') as f:
         response = requests.post('https://image.groupme.com/pictures', headers=headers, data=f)
         url = response.json()['payload']['picture_url']
-    
+
     # Post message
     msg = {
             "bot_id": "638f64d07ce7f83bdee814c31d",
@@ -71,7 +78,7 @@ def upload_image(file_path, text=''):
                     }
                 ]
             }
-    
+
     print requests.post('https://api.groupme.com/v3/bots/post', json=msg)
 
 def test():
