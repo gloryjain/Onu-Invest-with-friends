@@ -1,3 +1,5 @@
+# coding: utf-8
+
 """
 This bot listens to port 5002 for incoming connections from Facebook. It takes
 in any messages that the bot receives and echos it back.
