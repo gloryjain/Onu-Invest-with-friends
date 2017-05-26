@@ -308,7 +308,7 @@ def groupme_message():
         if(event == "StockGrade"):
             ticker = ai['result']['parameters']['StockTickers']
             grade = stock_grade(ticker)
-            sendMessage('The grade of' + ticker + 'is' + grade)
+            sendMessage('The grade of ' + ticker + ' is ' + grade)
 
         if(event == "Stock Info"):
             ticker = ai['result']['parameters']['StockTickers']
@@ -396,6 +396,15 @@ def list_accts():
         acct['bal'] = locale.currency(getBalance(acct['id']))
 
     return render_template("list.html", accts=accts)
+
+@app.route("/send")
+def send_page():
+    if "msg" in request.args:
+        print("sending ")
+        sendMessage(request.args['msg'])
+
+    return render_template("send.html" )
+
 
 @app.route("/")
 def home():
