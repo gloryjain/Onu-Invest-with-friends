@@ -360,6 +360,11 @@ def groupme_message():
             url = getShortURL('https://content.capitaloneinvesting.com/mgdcon/knowledgecenter/Trade/Stocks/what_is_a_stock/what-is-a-stock.htm')
             sendMessage("Sooooo, yeah what is a stock? Let's ask Capital One! Check this out:" + url + " They're better at explaining than I am tbh...")
 
+        if(event == "Stock Earnings"):
+            print("earnings")
+            ticker = ai['result']['parameters']['StockTickers']
+            get_stock_earnings_plot(ticker)
+
     else:
         pass
 
