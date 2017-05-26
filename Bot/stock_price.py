@@ -45,6 +45,49 @@ def get_stock_earnings_plot(ticker):
     upload_image(f.name, "Quarterly earnings for " + ticker.upper())
     return f.name # image picture filepath
 
+def get_stock_earnings(ticker):
+    # Core US Fundamentals Data
+    # Earnings per Basic Share (Most Recent - Quarterly)
+    data = get_stock_info(ticker, dataset='SF1', suffix='_EPS_MRQ')
+    last = data['Value'].iloc[-1]
+    first = data['Value'].iloc[1]
+    CAGR = ((last/first)**(0.2))-1
+    return (last, CAGR)
+
+def get_stock_revenues(ticker):
+    five_years = 365*5
+    five_years = (datetime.now() - timedelta(days=five_years)).strftime('%Y-%m-%d')
+    data = get_stock_info(ticker, dataset='SF1', suffix='_REVENUE_MRQ', start_date=five_years)
+    #print(data)
+    last = (data['Value'].iloc[-1])/1e9
+    first = (data['Value'].iloc[0])/1e9
+    CAGR =((last/first)**(0.2))-1
+    if last <= 1:
+        size = 'small'
+        grade = CAGR/0.15
+    elif last >= 1 and last<=10:
+        size = 'medium'
+        grade = CAGR/0.12
+    elif last > 10:
+        size = 'large'
+        grade = CAGR/0.07
+
+    return (last, CAGR, size, grade)
+
+def stock_grade(ticker):
+    [earnings, earnings_growth] = get_stock_earnings(ticker)
+    [sales, sales_growth, size, sales_grade] = get_stock_revenues(ticker)
+
+    if size == 'small':
+        earnings_grade = earnings_growth/0.15
+    elif size == 'medium':
+        earnings_grade = earnings_growth/0.12
+    elif size == 'large':
+        earnings_grade = earnings_growth/0.07
+    grade = (0.5*earnings_grade + 0.5*sales_grade)*100
+    grade_str = '%d%% out of 100%%' %grade
+    return grade_str
+    
 # Returns stock price in a user-friendly way
 # https://stackoverflow.com/questions/320929/currency-formatting-in-python
 def get_stock_price_friendly(ticker):
