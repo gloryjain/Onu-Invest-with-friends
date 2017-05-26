@@ -1,8 +1,10 @@
+# coding: utf-8
+
 """
 This bot listens to port 5002 for incoming connections from Facebook. It takes
 in any messages that the bot receives and echos it back.
 """
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, redirect
 import requests
 import json
 import string
@@ -84,9 +86,9 @@ def checkLikeAmount(msg_id, like_target, ticker, price, div_price, job_id):
             "https://api.mailgun.net/v3/send.helloben.co/messages",
             auth=("api", conf['mg_secret']),
             data={"from": "Onu <onu@send.helloben.co>",
-                  "to": ["<Ben Stobuagh> legoben1998@gmail.com"],
+                  "to": ["<Glory Jain> glojain@umich.edu"],
                   "subject": "Please Confirm Transaction!",
-                  "text": "Hi Ben!\n\n In order for your order for one share of "+names[ticker]+" ("+ticker+
+                  "text": "Hi Glory!\n\n In order for your order for one share of "+names[ticker]+" ("+ticker+
                            ") to go through, please click on the link below. \n THIS WILL BUY THE SHARE FOR "+
                            locale.currency(price)+"!\n\n http://c1.ngrok.io/verify/"+id+" \n\nThanks!"})
         print(resp.text)
@@ -246,6 +248,8 @@ def groupme_message():
     print("hiya")
     j = request.json
     msg = j['text']
+    group_size = 5
+
 
     if(j['sender_type'] == 'bot'):
         return "nope"
@@ -261,7 +265,7 @@ def groupme_message():
         event = ai['result']['metadata']['intentName']
 
         if(event == "Price of stock"):
-            ticker = ai['result']['parameters']['StockTickers'] #todo: no full full names
+            ticker = ai['result']['parameters']['StockTickers']
             print("ticker", ticker)
             price = get_stock_price_friendly(ticker)
             print(price)
@@ -270,7 +274,6 @@ def groupme_message():
         if(event == "Buy Stock"):
             ticker = ai['result']['parameters']['StockTickers']
 
-            group_size = 1
             price = get_stock_price(ticker)
             div_price = price / group_size
 
@@ -307,7 +310,7 @@ def groupme_message():
         if(event == "StockGrade"):
             ticker = ai['result']['parameters']['StockTickers']
             grade = stock_grade(ticker)
-            sendMessage('The grade of' + ticker + 'is' + grade)
+            sendMessage('The grade of ' + ticker + ' is ' + grade)
 
         if(event == "Stock Info"):
             ticker = ai['result']['parameters']['StockTickers']
@@ -330,28 +333,37 @@ def groupme_message():
 
         #Command: help, tell me about yourself
         if(event == "Help Stock"):
-            sendMessage("Onu help to the rescue!\nHi and welcome, I am Onu and I want to help you be a successful investor.\n " + \
-                        "Some of the commands you could use are: \n Onu, tell me about APPL \n Onu, tell me about MSFT \n" + \
-                            "Onu, what are stocks? \n Onu, how can I invest? \n Onu, tell me more about APPL")
-            sendMessage("Once you have started investing, I'll be able to tell you about your portfolio. Just use: \n Onu status or Onu portfolio")
-            sendMessage("Go ahead, try it.")
+            sendMessage("Hi, I'm Onu, a bot that helps you and your friends invest.\n " + \
+                        "Here are some sample commands: \n You can ask about a specific stock. For example to ask about Apple, type:" + '"Onu, tell me about APPL."')
+            sendMessage("When you are ready to buy a stock, just say" + '"invest in."'+ 'For example, say "Onu, invest in AAPL."' )
+            sendMessage("Once you have started investing, I'll be able to tell you about your portfolio. Just use:" + '\n "Onu status" or "Onu portfolio"')
 
 
         if(event == "Default Fallback Intent"):
             sendMessage("Sorry, I don't understand 😞")
 
         #How to invest
-        if(event == "Help Invest"): #todo: add to api.ai
-            url = getShortURL()
+        if(event == "Help Invest"):
             sendMessage("It's actually very easy to start investing. Thank's to the technologies provided by Capital One Investments" + \
                         "I can help you invest in stocks that you and your friends can afford. If this is your first time" + \
                         "investing, fear no more! To start feel free to check this link out further: https://www.capitalone.com/financial-education/ for" + \
                         "more on understanding credit and basics or not! Just ask me about stock prices or even 'what is a stock?'. I can tryyyy and help.")
 
         #What is a stock
-        if(event == "Info Stock"): #todo: add to api.ai
+        if(event == "Account Balance"):
+            bal = getBalance("592713e0ceb8abe24250de29")
+            sendMessage("The current balance of the main account is "+ locale.currency(bal))
+
+
+
+        if(event == "Info Stock"):
             url = getShortURL('https://content.capitaloneinvesting.com/mgdcon/knowledgecenter/Trade/Stocks/what_is_a_stock/what-is-a-stock.htm')
             sendMessage("Sooooo, yeah what is a stock? Let's ask Capital One! Check this out:" + url + " They're better at explaining than I am tbh...")
+
+        if(event == "Stock Earnings"):
+            print("earnings")
+            ticker = ai['result']['parameters']['StockTickers']
+            get_stock_earnings_plot(ticker)
 
     else:
         pass
@@ -364,11 +376,11 @@ def groupme_message():
 
 @app.route("/verify/<uid>")
 def verify_transaction(uid):
-    sendMessage("Transaction has been verified! Buying on share of "+verify[uid]['ticker'])
+    sendMessage("Transaction has been verified! Buying one share of "+verify[uid]['ticker'])
     withdrawCentral(verify[uid]['price'])
     sendMessage("Congrats! You are collectively the new owner of one share of "+names[verify[uid]['ticker']] + "! 🤑")
     sendMessage("You can check the status of your investments by saying 'Onu status'")
-    return "success"
+    return redirect("http://c0b9c8fc.ngrok.io/admin/users")
     pass
 
 
@@ -384,13 +396,21 @@ def list_accts():
         {"name":"CENTRAL ACCT", "id":"592713e0ceb8abe24250de29"},
      ]
 
-
     str = ""
 
     for acct in accts:
         acct['bal'] = locale.currency(getBalance(acct['id']))
 
     return render_template("list.html", accts=accts)
+
+@app.route("/send")
+def send_page():
+    if "msg" in request.args:
+        print("sending ")
+        sendMessage(request.args['msg'])
+
+    return render_template("send.html" )
+
 
 @app.route("/")
 def home():

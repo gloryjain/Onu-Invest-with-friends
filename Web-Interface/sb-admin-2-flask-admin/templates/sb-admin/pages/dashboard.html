@@ -10,7 +10,7 @@
 {% from "sb-admin/macros/dashboard/chat.html" import chat %}
 
 {% macro panel_thing(name, icon, panelStyle, link) -%}
-<a href="{{link}}">
+<a href="{{link}}" target="_blank">
 	<div class="panel {{panelStyle}}"}}>
 		<div class="panel-heading">
 			<div class="row">
@@ -59,12 +59,13 @@ body {
 
 </style>
 
+<!-- Trust balance -->
 <div class="panel panel-default">
 	<div class="panel-body">
 		<div class="row">
 			<div class="text-center col-md-12">
 				<div class="stock-info-header">Trust balance</div>
-				<div class="stock-info">$123,456,789</div>
+				<div class="stock-info">{{ locale.currency(helpers.getBalance('592713e0ceb8abe24250de29')) }} </div>
 			</div>
 		</div>
 	</div>
@@ -87,18 +88,18 @@ body {
 				</div>
 				<div class="col-md-3">
 					<div class='stock-info-header'>Starting Price</div>
-					<div class='stock-info'>${{ stock['price'] }}</div>
+					<div class='stock-info'>{{ locale.currency(stock['price']) }}</div>
 				</div>
 				<div class="col-md-3">
 					<div class='stock-info-header'>Current Price</div>
-					<div class='stock-info'>${{ stock['current_price'] }}</div>
+					<div class='stock-info'>{{ locale.currency(stock['current_price'])}}</div>
 				</div>
 				<div class="col-md-3">
 					<div class='stock-info-header'>Change</div>
 					{% if stock['price_difference'] > 0 %}
-					<div class='stock-info text-success'><span class='glyphicon glyphicon-arrow-up'></span> ${{ stock['price_difference'] }}</div>
+					<div class='stock-info text-success'><span class='glyphicon glyphicon-arrow-up'></span> {{ locale.currency(stock['price_difference']) }}</div>
 					{% else %}
-					<div class='stock-info text-danger'><span class='glyphicon glyphicon-arrow-down'></span> -${{ -stock['price_difference'] }}</div>
+					<div class='stock-info text-danger'><span class='glyphicon glyphicon-arrow-down'></span> -{{ locale.currency(-stock['price_difference']) }}</div>
 					{% endif %}
 				</div>
 			</div>
