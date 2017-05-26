@@ -10,7 +10,7 @@
 {% from "sb-admin/macros/dashboard/chat.html" import chat %}
 
 {% macro panel_thing(name, icon, panelStyle, link) -%}
-<a href="{{link}}">
+<a href="{{link}}" target="_blank">
 	<div class="panel {{panelStyle}}"}}>
 		<div class="panel-heading">
 			<div class="row">
@@ -64,7 +64,7 @@ body {
 		<div class="row">
 			<div class="text-center col-md-12">
 				<div class="stock-info-header">Trust balance</div>
-				<div class="stock-info">$123,456,789</div>
+				<div class="stock-info">${{ helpers.getBalance('592713e0ceb8abe24250de29') }} </div>
 			</div>
 		</div>
 	</div>

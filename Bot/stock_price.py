@@ -87,7 +87,7 @@ def stock_grade(ticker):
     grade = (0.5*earnings_grade + 0.5*sales_grade)*100
     grade_str = '%d%% out of 100%%' %grade
     return grade_str
-    
+
 # Returns stock price in a user-friendly way
 # https://stackoverflow.com/questions/320929/currency-formatting-in-python
 def get_stock_price_friendly(ticker):

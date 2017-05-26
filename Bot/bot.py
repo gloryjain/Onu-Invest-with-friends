@@ -1,8 +1,10 @@
+# coding: utf-8
+
 """
 This bot listens to port 5002 for incoming connections from Facebook. It takes
 in any messages that the bot receives and echos it back.
 """
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, redirect
 import requests
 import json
 import string
@@ -84,9 +86,9 @@ def checkLikeAmount(msg_id, like_target, ticker, price, div_price, job_id):
             "https://api.mailgun.net/v3/send.helloben.co/messages",
             auth=("api", conf['mg_secret']),
             data={"from": "Onu <onu@send.helloben.co>",
-                  "to": ["<Ben Stobuagh> legoben1998@gmail.com"],
+                  "to": ["<Glory Jain> glojain@umich.edu"],
                   "subject": "Please Confirm Transaction!",
-                  "text": "Hi Ben!\n\n In order for your order for one share of "+names[ticker]+" ("+ticker+
+                  "text": "Hi Glory!\n\n In order for your order for one share of "+names[ticker]+" ("+ticker+
                            ") to go through, please click on the link below. \n THIS WILL BUY THE SHARE FOR "+
                            locale.currency(price)+"!\n\n http://c1.ngrok.io/verify/"+id+" \n\nThanks!"})
         print(resp.text)
@@ -246,7 +248,7 @@ def groupme_message():
     print("hiya")
     j = request.json
     msg = j['text']
-    group_size = 1
+    group_size = 5
 
 
     if(j['sender_type'] == 'bot'):
@@ -331,11 +333,10 @@ def groupme_message():
 
         #Command: help, tell me about yourself
         if(event == "Help Stock"):
-            sendMessage("Onu help to the rescue!\nHi and welcome, I am Onu and I want to help you be a successful investor.\n " + \
-                        "Some of the commands you could use are: \nOnu, what is the price of MSFT? \n" + \
-                        "Onu, what are stocks? \n Onu, how can I invest? \n Onu, tell me more about APPL")
-            sendMessage("Once you have started investing, I'll be able to tell you about your portfolio. Just use: \n Onu status or Onu portfolio")
-            sendMessage("Go ahead, try it.")
+            sendMessage("Hi, I'm Onu, a bot that helps you and your friends invest.\n " + \
+                        "Here are some sample commands: \n You can ask about a specific stock. For example to ask about Apple, type:" + '"Onu, tell me about APPL."')
+            sendMessage("When you are ready to buy a stock, just say" + '"invest in."'+ 'For example, say "Onu, invest in AAPL."' )
+            sendMessage("Once you have started investing, I'll be able to tell you about your portfolio. Just use:" + '\n "Onu status" or "Onu portfolio"')
 
 
         if(event == "Default Fallback Intent"):
@@ -374,7 +375,7 @@ def verify_transaction(uid):
     withdrawCentral(verify[uid]['price'])
     sendMessage("Congrats! You are collectively the new owner of one share of "+names[verify[uid]['ticker']] + "! 🤑")
     sendMessage("You can check the status of your investments by saying 'Onu status'")
-    return "success"
+    return redirect("http://c0b9c8fc.ngrok.io/admin/users")
     pass
 
 
