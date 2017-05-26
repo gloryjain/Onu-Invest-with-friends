@@ -8,8 +8,8 @@ url = 'Should be an error message:' + getUrl('IPSEMDOLSET')
 print(url)
 
 #Test Stock Price functions
-price = get_stock_info('AAPL')
-print("The price of Apple:")
+price = get_stock_info('AAPL', dataset='WIKI')
+print("The price of Apple on the WIKI dataset:")
 print(price)
 
 price = + get_stock_price('AAPL')

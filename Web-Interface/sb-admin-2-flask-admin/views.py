@@ -50,8 +50,10 @@ class AdminIndexView(admin.AdminIndexView):
         for stock in db:
             stock['pretty_date'] = datetime.datetime.strptime(stock['date'], '%Y-%m-%d %H:%M:%S.%f')
             stock['pretty_date'] = stock['pretty_date'].strftime("%b %-d, '%y")
+            stock['current_price'] = stock_price.get_stock_price(stock['ticker'])
+            stock['price_difference'] = (stock['current_price'] - stock['price'])
 
-        return render_template('sb-admin/pages/dashboard.html', admin_view=self, db=db, get_stock_price=stock_price.get_stock_price)
+        return render_template('sb-admin/pages/dashboard.html', admin_view=self, db=db)
     
     @expose('/blank')
     def blank(self):        
@@ -89,14 +91,14 @@ class AdminIndexView(admin.AdminIndexView):
         self.header = "Tables"
         return render_template('sb-admin/pages/tables.html', admin_view=self)
         
-    @expose('/forms')
-    def forms(self):        
+    @expose('/users')
+    def users(self):        
         if not login.current_user.is_authenticated:
             return redirect(url_for('.login_view'))
             
         self._stubs()    
-        self.header = "Forms"
-        return render_template('sb-admin/pages/forms.html', admin_view=self)         
+        self.header = "Users"
+        return render_template('sb-admin/pages/users.html', admin_view=self)         
         
     @expose('/ui/panelswells')
     def panelswells(self):        
