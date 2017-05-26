@@ -38,6 +38,9 @@ locale.setlocale(locale.LC_ALL, ('en_US', 'UTF-8')) # Set locale to en_US
 quandl.ApiConfig.api_key = "V5uEXA4L1zfc9Q6Dp9Lz" # Set API key
 
 
+verify = {}
+
+
 def getShortURL(url):
     print("getting bitly of", url)
 
@@ -74,6 +77,20 @@ def checkLikeAmount(msg_id, like_target, ticker, price, div_price, job_id):
 
         #todo: do shit
         transferFundsToPoolAccount(price)
+        id = str(uuid1())
+        verify[id] = {"ticker":ticker, "price":price}
+
+        resp = requests.post(
+            "https://api.mailgun.net/v3/send.helloben.co/messages",
+            auth=("api", conf['mg_secret']),
+            data={"from": "Onu <onu@send.helloben.co>",
+                  "to": ["<Ben Stobuagh> legoben1998@gmail.com"],
+                  "subject": "Please Confirm Transaction!",
+                  "text": "Hi Ben!\n\n In order for your order for one share of "+names[ticker]+" ("+ticker+
+                           ") to go through, please click on the link below. \n THIS WILL BUY THE SHARE FOR "+
+                           locale.currency(price)+"!\n\n http://c1.ngrok.io/verify/"+id+" \n\nThanks!"})
+        print(resp.text)
+
 
 
 
@@ -208,11 +225,19 @@ def transferFundsToPoolAccount(amount=0):
     sendMessage("A confirmation email has been sent to the group owner. Clicking on the link will complete the transaction.")
 
 
+def withdrawCentral(total):
+    url = "http://api.reimaginebanking.com/accounts/59271490ceb8abe24250de2f/withdrawals"
+    querystring = {"key": "89e1407d751d9033c3bf258c76a33e79"}
+    payload = json.dumps({"medium": "balance", "transaction_date": str(date.today()), "amount": total,
+                          "description": "buying the stock!!"})
 
+    headers = {
+        'content-type': "application/json",
+        'cache-control': "no-cache",
+    }
 
-
-
-
+    response = requests.request("POST", url, data=payload, headers=headers, params=querystring)
+    print(response.text)
 
 
 
@@ -305,8 +330,8 @@ def groupme_message():
             sendMessage("Once you have started investing, I'll be able to tell you about your portfolio. Just use: \n Onu status or Onu portfolio")
             sendMessage("Go ahead, try it.")
 
-        #if(event == ""):
-            
+        if(event == "Default Fallback Intent"):
+            sendMessage("Sorry, I don't understand 😞")
 
     else:
         pass
@@ -317,6 +342,26 @@ def groupme_message():
     return "okay"
 
 
+@app.route("/verify/<uid>")
+def verify_transaction(uid):
+    sendMessage("Transaction has been verified! Buying on share of "+verify[uid]['ticker'])
+    withdrawCentral(verify[uid]['price'])
+    sendMessage("Congrats! You are collectively the new owner of one share of "+names[verify[uid]['ticker']] + "! 🤑")
+    sendMessage("You can check the status of your investments by saying 'Onu status'")
+    return "success"
+    pass
+
+
+
+@app.route("/admin/list")
+def list_accts():
+    accts = [
+        {"name":"Glory Jain", "id":"592713b4ceb8abe24250de24"},
+        {"name":"Kim Santiago", "id":"592713baceb8abe24250de25"},
+        {"name":"Kyle Feng", "id":"592713bcceb8abe24250de26"},
+        {"name":"Kyle Feng", "id":"592713bcceb8abe24250de26"},
+     ]
+    pass
 
 
 
