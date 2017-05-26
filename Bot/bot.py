@@ -306,7 +306,7 @@ def groupme_message():
 
         if(event == "StockGrade"):
             ticker = ai['result']['parameters']['StockTickers']
-            grade = stock_grade
+            grade = stock_grade(ticker)
             sendMessage('The grade of' + ticker + 'is' + grade)
 
         if(event == "Stock Info"):
