@@ -36,8 +36,15 @@ Our python server(Bot/Bot.py) is the main server that runs our whole bot.
  - [ngrok](https://ngrok.com) for securing UI
  
  # How to run this bot and UI
+ The keys, group id, and authentication tokens need to be filled in prior to starting  the program. These can be set up in the config.json file.
+ To run the bot:
+ '''
+ git clone https://github.com/C1-SoftwareEngineeringSummit/team3.git
+ cd Bot
+ python3 bot.py
+ '''
+ To run the UI:
  
- todo 
  
  #### Team Members: Kyle Feng, Ben Stobaugh, Kim Santiago, Kobi Felton, Glory Jain
  **Disclaimer: The creators of this app are not responsible for any financial losses/damages
